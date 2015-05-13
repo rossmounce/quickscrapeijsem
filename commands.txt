@@ -1,0 +1,12 @@
+#!/bin/bash
+
+wget -w 4 -i year-tocs.txt
+grep '/vol' 2* | tr ""\" "\n" | grep '/vol' | sed 's/^/http:\/\/ijs.sgmjournals.org/g' > issuetocs.txt
+mkdir yeartocs
+mv 2* year-tocs.txt yeartocs/
+wget -w 4 -i issuetocs.txt
+grep '.full' ind* | tr ""\" "\n" | grep '\.full' | grep -v '\.full\.' | sed 's/^/http:\/\/ijs.sgmjournals.org/g' > ijsemarticles.txt
+mkdir tocissues
+mv index* tocissues/
+git clone https://github.com/rossmounce/journal-scrapers
+quickscrape  --urllist ijsemarticles.txt --ratelimit 3 --loglevel verbose --scraper journal-scrapers/scrapers/ijsem.json   --output ./../ijsemout --outformat bibjson
